@@ -833,15 +833,14 @@ a:focus-visible, button:focus-visible{
 const proposal = {
 
   // ---- IMAGES -----------------------------------------------------
-  // Put your four photos in an "images" folder next to this file,
-  // then update the paths below. If a path is wrong or missing,
-  // this page will show a clearly-labeled placeholder instead of
-  // a broken image, so you can preview the whole site before you
-  // have final photos ready.
-  childhoodImage: "images/img1.JPG",    // CHILDHOOD_IMAGE
-  teenageImage:   "images/img2.JPG",    // TEENAGE_IMAGE
-  currentImage:   "images/img3.JPG",    // CURRENT_IMAGE
-  ourPhoto:       "images/img4.PNG",    // OUR_PHOTO
+  // Keep these four image files in the SAME folder as this HTML file.
+  // Exact filenames:
+  // img1.jpg, img2.jpg, img3.jpg, img4.png
+  // If an image is missing, a clean placeholder will appear.
+  childhoodImage: "img1.jpg",           // CHILDHOOD_IMAGE
+  teenageImage:   "img2.jpg",           // TEENAGE_IMAGE
+  currentImage:   "img3.jpg",           // CURRENT_IMAGE
+  ourPhoto:       "img4.png",           // OUR_PHOTO
 
   // ---- MESSAGES -----------------------------------------------------
   // Keep these short and personal — a sentence or two each is plenty.
@@ -895,20 +894,27 @@ const proposal = {
     var wrap = img.closest(".frame-inner");
 
     function showPlaceholder(){
-      if (!wrap) return;
-      img.remove();
-      var box = document.createElement("div");
-      box.className = "placeholder-box";
-      box.innerHTML =
-        PLACEHOLDER_SVG +
-        '<span class="ph-label">Add your photo</span>' +
-        '<span class="ph-path">' + src + '</span>';
-      wrap.appendChild(box);
-      wrap.classList.add("in-view"); // placeholder can show immediately
+      if (!wrap || !img.isConnected) return;
+      img.style.display = "none";
+      var box = wrap.querySelector(".placeholder-box");
+      if (!box){
+        box = document.createElement("div");
+        box.className = "placeholder-box";
+        box.innerHTML =
+          PLACEHOLDER_SVG +
+          '<span class="ph-label">Photo coming soon</span>';
+        wrap.appendChild(box);
+      }
+      wrap.classList.add("in-view");
     }
 
     img.addEventListener("error", showPlaceholder, { once:true });
-    img.addEventListener("load", function(){ img.classList.add("loaded"); }, { once:true });
+    img.addEventListener("load", function(){
+      img.classList.add("loaded");
+      img.style.display = "block";
+      var oldPlaceholder = wrap && wrap.querySelector(".placeholder-box");
+      if (oldPlaceholder) oldPlaceholder.remove();
+    }, { once:true });
     img.src = src;
   });
 
